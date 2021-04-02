@@ -8,19 +8,19 @@ export const CONTROLS = {
 
 export function playPauseActions(player) {
     
-    // const { playPause } = CONTROLS;
-    // playPause().addEventListener('click', (e) => {
-    //     const selfClassList = e.target.classList;
+    const { playPause } = CONTROLS;
+    playPause().addEventListener('click', (e) => {
+        const selfClassList = e.target.classList;
 
-    //     if(!selfClassList.contains('pause')) {
-    //         player.playVideo();
-    //         selfClassList.add('pause');
-    //     }else {
-    //         player.pauseVideo();
-    //         selfClassList.remove('pause');
-    //     }
+        if(!selfClassList.contains('pause')) {
+            player.playVideo();
+            selfClassList.add('pause');
+        }else {
+            player.pauseVideo();
+            selfClassList.remove('pause');
+        }
 
-    // });
+    });
 }
 
 export function jumpVideo(player, setDoJump) {

@@ -63,12 +63,9 @@ function MainPage() {
                     </div>
                     <hr/>
                     <div id="controls">
-                        
-
                         <div className="progress">
                             <input type="range" min="0" max={progressBar.max} value={progressBar.value} step="1" className="range blue" />
                         </div>
-
                         <div className="actions">
                             <div className="button-container">
                                 <div className="arrows previous">
@@ -79,7 +76,6 @@ function MainPage() {
                                 <div class="play-pause">
                                     <PlayArrow />
                                 </div>
-
                             </div>
                             <div className="button-container" onClick={nextVideo}>
                                 <div className="arrows next">

@@ -73,7 +73,7 @@ function MainPage() {
                                 </div>
                             </div>
                             <div className="button-container">
-                                <div class="play-pause">
+                                <div class="play-pause"> 
                                     <PlayArrow />
                                 </div>
                             </div>

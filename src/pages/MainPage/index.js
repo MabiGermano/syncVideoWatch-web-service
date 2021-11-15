@@ -89,6 +89,30 @@ function MainPage() {
       "provider_url": "https://www.youtube.com/",
       "thumbnail_url": "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
       "video_code": " 79DijItQXMM"
+    }, {
+      "id": "6",
+      "title": "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
+      "author_name": "DisneyMusicVEVO",
+      "author_url": "https://www.youtube.com/user/DisneyMusicVEVO",
+      "provider_url": "https://www.youtube.com/",
+      "thumbnail_url": "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
+      "video_code": " 79DijItQXMM"
+    }, {
+      "id": "7",
+      "title": "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
+      "author_name": "DisneyMusicVEVO",
+      "author_url": "https://www.youtube.com/user/DisneyMusicVEVO",
+      "provider_url": "https://www.youtube.com/",
+      "thumbnail_url": "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
+      "video_code": " 79DijItQXMM"
+    }, {
+      "id": "8",
+      "title": "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
+      "author_name": "DisneyMusicVEVO",
+      "author_url": "https://www.youtube.com/user/DisneyMusicVEVO",
+      "provider_url": "https://www.youtube.com/",
+      "thumbnail_url": "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
+      "video_code": " 79DijItQXMM"
     }]
   }
 
@@ -108,13 +132,17 @@ function MainPage() {
 
   return (
     <>
-      <Box>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
+      <Box id="main-page">
+        <Grid container spacing={0.5} className="full-height">
+          <Grid item xs={4} className="full-height">
             <nav>
-              <List sx={{
-                overflowY: 'scroll'
-              }}>
+              <List 
+              sx={{
+                height: '100%',
+                bgcolor: 'background.paper',
+                overflowY: 'auto',
+                '& ul': { padding: 0 }
+              }} className="playlist-queue">
                 {getPlaylist().map(video => {
                   return (
                     <ListItemButton
@@ -130,8 +158,8 @@ function MainPage() {
                         sx={{
                           height: 233,
                           width: 350,
-                          maxHeight: { xs: 233, md: 167 },
-                          maxWidth: { xs: 350, md: 250 },
+                          maxHeight: { xs: 200, md: 120 },
+                          maxWidth: { xs: 300, md: 180 },
                         }}
                         alt="The house from the offer."
                         src={video.thumbnail_url}
@@ -164,20 +192,21 @@ function MainPage() {
 
           <Grid item xs={8}>
             <Box>
-              <div id="player">
+              <Box  sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
                 <YouTube
                   containerClassName="video-container"
                   videoId="79DijItQXMM"
                   opts={{
-                    width: (window.innerWidth * 65.5) / 100,
-                    height: (window.innerHeight * 65.5) / 100,
+                    // width: (window.innerWidth * 65.5) / 100,
+                    // height: (window.innerHeight * 65.5) / 100,
                     playerVars: { controls: 0 },
                   }}
                 />
-              </div>
-
-
-
+              </Box>
 
 
               <Slider

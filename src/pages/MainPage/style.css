@@ -1,0 +1,9 @@
+nav, 
+#main-page, 
+.full-height {
+    height: 100%;
+}
+
+nav {
+    max-height: 100%;
+}

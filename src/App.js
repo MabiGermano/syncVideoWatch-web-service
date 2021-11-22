@@ -1,8 +1,20 @@
-import Routes from './routes';
+import { createTheme, ThemeProvider } from "@mui/material";
+import Routes from "./routes";
+
 
 function App() {
+  const THEME = createTheme({
+    palette: {
+      primary: {
+        main: '#5E3480',
+        contrastText: '#fff',
+      }
+    },
+  });
   return (
-    <Routes/>
-  )
+    <ThemeProvider theme={THEME}>
+      <Routes />
+    </ThemeProvider>
+  );
 }
 export default App;

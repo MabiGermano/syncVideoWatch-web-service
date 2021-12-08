@@ -31,16 +31,32 @@ import {
   PauseRounded,
   PlayArrowRounded,
 } from "@material-ui/icons";
+import { onReadyEvent, onPlayerStateChange } from "../../service/PlayerService";
+import { playPauseActions, jumpVideo } from "../../service/ControlsService";
 
 const ENDPOINT = "http://localhost:3333";
 const socket = socketIOClient(ENDPOINT);
 
 function MainPage() {
   const [doJump, setDoJump] = useState(false);
-  const [progressBar, setProgressBar] = useState({
-    max: 0,
-    value: 0,
-  });
+  const [videoUrl, setVideoUrl] = useState("");
+
+  const [duration, setDuration] = useState(0);
+  const [position, setPosition] = useState(0);
+  const [paused, setPaused] = useState(true);
+
+  function buildServiceParams() {
+    return {
+      socket: socket,
+      progressBar: {
+        value: position,
+        update: setPosition,
+        setDuration: setDuration,
+      },
+      paused: { value: paused, update: setPaused },
+      doJump: { value: doJump, update: setDoJump },
+    };
+  }
 
   const TinyText = styled(Typography)({
     fontSize: "0.75rem",
@@ -48,18 +64,6 @@ function MainPage() {
     fontWeight: 500,
     letterSpacing: 0.2,
   });
-
-  const [videoUrl, setVideoUrl] = useState("");
-
-  function buildServiceParams() {
-    return {
-      socket: socket,
-      progressBar: progressBar,
-      setProgressBar: setProgressBar,
-      doJump: doJump,
-      setDoJump: setDoJump,
-    };
-  }
 
   const users = [
     { name: "Mabi" },
@@ -183,13 +187,11 @@ function MainPage() {
   }
 
   const theme = useTheme();
-  const duration = 200; // seconds
-  const [position, setPosition] = useState(32);
-  const [paused, setPaused] = useState(false);
   function formatDuration(value) {
     const minute = Math.floor(value / 60);
     const secondLeft = value - minute * 60;
-    return `${minute}:${secondLeft < 9 ? `0${secondLeft}` : secondLeft}`;
+    // return `${minute}:${secondLeft < 9 ? `0${secondLeft}` : secondLeft}`;
+    return value;
   }
   const mainIconColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   const lightIconColor =
@@ -249,18 +251,26 @@ function MainPage() {
                       // height: (window.innerHeight * 65.5) / 100,
                       playerVars: { controls: 0 },
                     }}
+                    onReady={(event) =>
+                      onReadyEvent(event, buildServiceParams())
+                    }
+                    onStateChange={(event) =>
+                      onPlayerStateChange(event, buildServiceParams())
+                    }
                   />
                 </Grid>
 
                 <Grid item xs={1.3} id="player-control" className="panel">
                   <Slider
+                    id="progress-bar"
                     aria-label="time-indicator"
                     size="small"
                     value={position}
                     min={0}
                     step={1}
                     max={duration}
-                    onChange={(_, value) => setPosition(value)}
+                    onChange = {(_, value) => jumpVideo(_, value, setPosition, socket)}
+                    // onChange={(_, value) => jumpVideo(_, value, setPosition, socket)}
                     sx={{
                       color: "#5E3480",
                       height: 4,
@@ -310,8 +320,9 @@ function MainPage() {
                       />
                     </IconButton>
                     <IconButton
+                      id="play-pause"
                       aria-label={paused ? "play" : "pause"}
-                      onClick={() => setPaused(!paused)}
+                      onClick={() => playPauseActions(paused, setPaused)}
                     >
                       {paused ? (
                         <PlayArrowRounded

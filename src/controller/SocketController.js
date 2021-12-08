@@ -2,22 +2,17 @@ import { PlayerEvents } from '../utils/YouTubeEventsEnum';
 import { CONTROLS } from '../service/ControlsService'
 
 
-export function setTune(player, socket) {
+export function setTune(player, paused, socket) {
     
     socket.on('SetTune', action => {
-        const { playPause } = CONTROLS
         
         if (action.eventStatus === PlayerEvents.PAUSED) {
-            playPause().classList.remove('pause');
+            paused.update(!paused);
             player.pauseVideo();
-        } 
-        
-        if (action.eventStatus === PlayerEvents.PLAYING) {
-            playPause().classList.add('pause');
+        } else if (action.eventStatus === PlayerEvents.PLAYING) {
+            paused.update(!paused);
             player.playVideo();
-        } 
-        
-        if (action.eventStatus === PlayerEvents.JUMPED) {
+        } else if (action.eventStatus === PlayerEvents.JUMPED) {
             player.seekTo(action.time, true);
         }
     });

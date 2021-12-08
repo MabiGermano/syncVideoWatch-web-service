@@ -1,41 +1,36 @@
-// import { getPlayerInstance } from './PlayerService';
+import { player } from "./PlayerService";
+import { PlayerEvents } from "../utils/YouTubeEventsEnum";
 
-// // porque isso funciona dessa forma?
-// // export const CONTROLS = {
-// //     playPause: () => document.querySelector('.play-pause'),
-// //     progressBar: () => document.querySelector('.progress input[type=range]')
-// // }
+export const CONTROLS = {
+  progressBar: () => document.querySelector("#progress-bar"),
+};
 
-// export function playPauseActions(player) {
-    
-//     // const { playPause } = CONTROLS;
-//     playPause().addEventListener('click', (e) => {
-//         const selfClassList = e.target.classList;
+export function playPauseActions(paused, setPaused) {
+  paused ? player.playVideo() : player.pauseVideo();
+  setPaused(!paused.value);
+}
 
-//         if(!selfClassList.contains('pause')) {
-//             player.playVideo();
-//             selfClassList.add('pause');
-//         }else {
-//             player.pauseVideo();
-//             selfClassList.remove('pause');
-//         }
+export function jumpVideo(_, value, setPosition, socket) {
+  let intervalID;
+  console.log(player.getPlayerState());
+  if (
+    player.getPlayerState() === PlayerEvents.PLAYING ||
+    player.getPlayerState() === PlayerEvents.CUED
+  )
+    setInterval(() => {
+      intervalID = setPosition(player.getCurrentTime());
+    }, 1000);
+  else clearInterval(intervalID);
 
-//     });
-// }
-
-// // export function jumpVideo(player, setDoJump) {
-    
-// //     // const { progressBar } = CONTROLS;
-// //     const progressBarElement = progressBar();
-// //     progressBarElement.addEventListener('input', (e) => {
-// //         let v = progressBarElement.value;
-// //         setDoJump(true)
-// //         player.seekTo(v);     
-// //     });
-// // }
+  player.seekTo(value);
+  socket.emit("PlayerAction", {
+    eventStatus: PlayerEvents.JUMPED,
+    time: value,
+  });
+}
 
 // export function nextVideo() {
-//     getPlayerInstance().nextVideo();    
+//     getPlayerInstance().nextVideo();
 // }
 
 // export function previousVideo() {

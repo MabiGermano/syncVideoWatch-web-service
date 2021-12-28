@@ -199,7 +199,7 @@ function MainPage() {
 
   return (
     <>
-      <Box id="main-page">
+      <Box id="main-content">
         <Grid container spacing={0.5}>
           <Grid item xs={2}>
             <Box id="publishing-area"></Box>
@@ -269,7 +269,7 @@ function MainPage() {
                     min={0}
                     step={1}
                     max={duration}
-                    onChange = {(_, value) => jumpVideo(_, value, setPosition, socket)}
+                    onChange={(_, value) => jumpVideo(_, value, setPosition, socket)}
                     // onChange={(_, value) => jumpVideo(_, value, setPosition, socket)}
                     sx={{
                       color: "#5E3480",

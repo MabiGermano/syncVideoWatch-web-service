@@ -37,3 +37,22 @@ button {
     border-radius: var(--default-border-radius-size);
     width: 100%;
 }
+
+#publishing-area {
+    background-color: #c4c4c4;
+    height: 100%;
+
+}
+
+#main-content, 
+#main-content > * {
+    height: 100%;
+}
+
+main {
+    background-color: var(--main-bg-color);
+    width: 100%;
+    height: 100%;
+
+    border-radius: var(--default-border-radius-size);
+}

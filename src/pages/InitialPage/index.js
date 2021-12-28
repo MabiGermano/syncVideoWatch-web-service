@@ -1,7 +1,21 @@
+import { useState } from "react";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import api from "../../services/api";
 import { Box, Button, Grid, TextField } from "@mui/material";
 import "./style.css";
 
 function InitialPage() {
+    const history = useHistory();
+    const [nickname, setNickname] = useState('');
+
+    async function handleJoinRoom(event) {
+        event.preventDefault();
+        const user = {nickname}
+    
+       const response = await api.post('user', user);
+        console.log(response.data);
+        history.push(`/room/${response.data.room.identifier}`);
+      }
 
     return (
         <Box id="main-content">
@@ -18,6 +32,7 @@ function InitialPage() {
                                 justifyContent="space-evenly"
                                 noValidate
                                 autoComplete="off"
+                                onSubmit={handleJoinRoom}
                             >
                                 <Grid item>
                                     <TextField
@@ -25,6 +40,9 @@ function InitialPage() {
                                         id="outlined-required"
                                         label="Insert your nickname"
                                         color="primary"
+                                        id="nickname"
+                                        focused={true}
+                                        onChange={e => setNickname(e.target.value)}
                                     />
                                 </Grid>
                                 <Grid

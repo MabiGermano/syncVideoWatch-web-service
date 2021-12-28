@@ -2,6 +2,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import YouTube from "react-youtube";
 
 import { useState } from "react";
+import { useParams } from 'react-router-dom';
 
 import socketIOClient from "socket.io-client";
 import "./style.css";
@@ -31,13 +32,16 @@ import {
   PauseRounded,
   PlayArrowRounded,
 } from "@material-ui/icons";
-import { onReadyEvent, onPlayerStateChange } from "../../service/PlayerService";
-import { playPauseActions, jumpVideo } from "../../service/ControlsService";
+import { onReadyEvent, onPlayerStateChange } from "../../services/PlayerService";
+import { playPauseActions, jumpVideo } from "../../services/ControlsService";
 
 const ENDPOINT = "http://localhost:3333";
 const socket = socketIOClient(ENDPOINT);
 
 function MainPage() {
+
+  const {roomId} = useParams();
+  console.log("RoomId: ", roomId);
   const [doJump, setDoJump] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
 
@@ -45,7 +49,9 @@ function MainPage() {
   const [position, setPosition] = useState(0);
   const [paused, setPaused] = useState(true);
 
+
   function buildServiceParams() {
+
     return {
       socket: socket,
       progressBar: {
@@ -189,9 +195,8 @@ function MainPage() {
   const theme = useTheme();
   function formatDuration(value) {
     const minute = Math.floor(value / 60);
-    const secondLeft = value - minute * 60;
-    // return `${minute}:${secondLeft < 9 ? `0${secondLeft}` : secondLeft}`;
-    return value;
+    const secondLeft = parseInt(value - minute * 60);
+    return `${minute}:${secondLeft <= 9 ? `0${secondLeft}` : secondLeft}`;
   }
   const mainIconColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   const lightIconColor =

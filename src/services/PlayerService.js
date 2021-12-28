@@ -1,6 +1,6 @@
 import { PlayerEvents } from "../utils/YouTubeEventsEnum";
 import { jumpVideo } from "./ControlsService";
-import { setTune } from "../controller/SocketController";
+import { setTune } from "../controllers/SocketController";
 
 
 export function onReadyEvent(event, serviceParams) {

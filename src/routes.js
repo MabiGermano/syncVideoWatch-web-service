@@ -7,7 +7,7 @@ function Routes() {
         <BrowserRouter>
             <Switch>
                 <Route path="/" exact component={InitialPage} />
-                <Route path="/room" exact component={MainPage} />
+                <Route path="/room/:roomId" exact component={MainPage} />
             </Switch>
         </BrowserRouter>
     );

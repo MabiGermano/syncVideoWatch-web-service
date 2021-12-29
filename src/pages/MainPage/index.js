@@ -4,6 +4,7 @@ import YouTube from "react-youtube";
 import { useState } from "react";
 import { useParams } from 'react-router-dom';
 
+import api from "../../services/api";
 import socketIOClient from "socket.io-client";
 import "./style.css";
 
@@ -34,13 +35,14 @@ import {
 } from "@material-ui/icons";
 import { onReadyEvent, onPlayerStateChange } from "../../services/PlayerService";
 import { playPauseActions, jumpVideo } from "../../services/ControlsService";
+import { useEffect } from "react";
 
 const ENDPOINT = "http://localhost:3333";
 const socket = socketIOClient(ENDPOINT);
 
 function MainPage() {
 
-  const {roomId} = useParams();
+  const { roomId } = useParams();
   console.log("RoomId: ", roomId);
   const [doJump, setDoJump] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
@@ -48,7 +50,12 @@ function MainPage() {
   const [duration, setDuration] = useState(0);
   const [position, setPosition] = useState(0);
   const [paused, setPaused] = useState(true);
+  const [users, setUsers] = useState([]);
 
+  useEffect(() => api.get(`users/${roomId}`).then(response => {
+    setUsers(response.data)
+    console.log(response);
+  }));
 
   function buildServiceParams() {
 
@@ -70,14 +77,6 @@ function MainPage() {
     fontWeight: 500,
     letterSpacing: 0.2,
   });
-
-  const users = [
-    { name: "Mabi" },
-    { name: "User 1" },
-    { name: "User 2" },
-    { name: "User 3" },
-    { name: "User 4" },
-  ];
 
   function getPlaylist() {
     return [
@@ -223,9 +222,9 @@ function MainPage() {
                   <h1>Users</h1>
                   <Divider variant="middle" />
                   <List>
-                    {users.map((item) => {
-                      return <ListItem>{item.name}</ListItem>;
-                    })}
+                    {users.length > 0 ? users.map((item) => {
+                      return <ListItem>{item.nickname}</ListItem>;
+                    }) : []}
                   </List>
                 </Grid>
               </Grid>

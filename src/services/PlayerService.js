@@ -4,7 +4,7 @@ import { setTune } from "../controllers/SocketController";
 
 
 export function onReadyEvent(event, serviceParams) {
-  const { progressBar, doJump, paused, socket } = serviceParams;
+  const { progressBar, paused, socket } = serviceParams;
 
   player =  event.target
   
@@ -26,25 +26,18 @@ export function onPlayerStateChange(event, serviceParams) {
         time: event.target.getCurrentTime(),
     });
 }
-
-// export function addToQueue(id) {
-    //     console.log(playerInstance);
-    
-    //     playerInstance.loadVideoById(id);
-    // }
-    
     export function lazyPlayerInstance(playerInstance) {
         return function () {
             return playerInstance;
         };
     }
     
-    function resizeVideoByScreen(iframe) {
-        window.addEventListener("resize", () => {
-            const player = document.querySelector("#player");
-            iframe.width = player.offsetWidth;
-            iframe.height = (window.innerHeight * 75) / 100;
-        });
-    }
+    // function resizeVideoByScreen(iframe) {
+    //     window.addEventListener("resize", () => {
+    //         const player = document.querySelector("#player");
+    //         iframe.width = player.offsetWidth;
+    //         iframe.height = (window.innerHeight * 75) / 100;
+    //     });
+    // }
     
     export let player;

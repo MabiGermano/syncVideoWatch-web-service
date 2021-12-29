@@ -1,10 +1,6 @@
 import { player } from "./PlayerService";
 import { PlayerEvents } from "../utils/YouTubeEventsEnum";
 
-export const CONTROLS = {
-  progressBar: () => document.querySelector("#progress-bar"),
-};
-
 export function playPauseActions(paused, setPaused) {
   paused ? player.playVideo() : player.pauseVideo();
   setPaused(!paused.value);

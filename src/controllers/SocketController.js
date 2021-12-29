@@ -1,6 +1,4 @@
 import { PlayerEvents } from '../utils/YouTubeEventsEnum';
-import { CONTROLS } from '../services/ControlsService'
-
 
 export function setTune(player, paused, socket) {
     

@@ -48,9 +48,11 @@ function MainPage() {
   const [paused, setPaused] = useState(true);
   const [users, setUsers] = useState([]);
   const [playlist, setPlaylist] = useState([]);
+  const [videoUrl, setVideoUrl] = useState('');
 
   useEffect(() => api.get(`room/${roomId}`).then(response => {
     const room = response.data;
+    console.log("Room: ",room);
     setUsers(room.users)
     setPlaylist(room.playlist)
     console.log("room: ", response.data);
@@ -86,6 +88,13 @@ function MainPage() {
   }
   const mainIconColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   
+
+  async function handleNewVideo (event) {
+    console.log("fron video url:", videoUrl);
+    event.preventDefault();
+    const response = await api.post(`video/${roomId}`, {videoUrl});
+        console.log(response.data);
+  }
   return (
     <>
       <Box id="main-content">
@@ -240,6 +249,7 @@ function MainPage() {
                     justifyContent="space-evenly"
                     noValidate
                     autoComplete="off"
+                    onSubmit={handleNewVideo}
                   >
                     <Grid item xs={10}>
                       <TextField
@@ -247,6 +257,7 @@ function MainPage() {
                         id="outlined-required"
                         label="Insert a video url..."
                         color="primary"
+                        onChange={e => setVideoUrl(e.target.value)}
                       />
                     </Grid>
                     <Grid

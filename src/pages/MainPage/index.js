@@ -15,14 +15,12 @@ import {
   Divider,
   List,
   ListItem,
-  ListItemText,
   Slider,
   IconButton,
   Typography,
   ListItemButton,
   TextField,
 } from "@mui/material";
-import { Link } from "react-router-dom";
 
 import "./style.css";
 import {
@@ -43,19 +41,21 @@ const socket = socketIOClient(ENDPOINT);
 function MainPage() {
 
   const { roomId } = useParams();
-  console.log("RoomId: ", roomId);
   const [doJump, setDoJump] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
 
   const [duration, setDuration] = useState(0);
   const [position, setPosition] = useState(0);
   const [paused, setPaused] = useState(true);
   const [users, setUsers] = useState([]);
+  const [playlist, setPlaylist] = useState([]);
 
-  useEffect(() => api.get(`users/${roomId}`).then(response => {
-    setUsers(response.data)
-    console.log(response);
-  }));
+  useEffect(() => api.get(`room/${roomId}`).then(response => {
+    const room = response.data;
+    setUsers(room.users)
+    setPlaylist(room.playlist)
+    console.log("room: ", response.data);
+
+  }), []);
 
   function buildServiceParams() {
 
@@ -78,119 +78,6 @@ function MainPage() {
     letterSpacing: 0.2,
   });
 
-  function getPlaylist() {
-    return [
-      {
-        id: "1",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "2",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "3",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "4",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "5",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "6",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "7",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "8",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "8",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "8",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "8",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-      {
-        id: "8",
-        title: "Dwayne Johnson - You're Welcome (from Moana/Official Video)",
-        author_name: "DisneyMusicVEVO",
-        author_url: "https://www.youtube.com/user/DisneyMusicVEVO",
-        provider_url: "https://www.youtube.com/",
-        thumbnail_url: "https://i.ytimg.com/vi/79DijItQXMM/hqdefault.jpg",
-        video_code: " 79DijItQXMM",
-      },
-    ];
-  }
-
   const theme = useTheme();
   function formatDuration(value) {
     const minute = Math.floor(value / 60);
@@ -198,9 +85,7 @@ function MainPage() {
     return `${minute}:${secondLeft <= 9 ? `0${secondLeft}` : secondLeft}`;
   }
   const mainIconColor = theme.palette.mode === "dark" ? "#fff" : "#000";
-  const lightIconColor =
-    theme.palette.mode === "dark" ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
-
+  
   return (
     <>
       <Box id="main-content">
@@ -222,9 +107,9 @@ function MainPage() {
                   <h1>Users</h1>
                   <Divider variant="middle" />
                   <List>
-                    {users.length > 0 ? users.map((item) => {
+                    {users.length && users.map((item) => {
                       return <ListItem>{item.nickname}</ListItem>;
-                    }) : []}
+                    })}
                   </List>
                 </Grid>
               </Grid>
@@ -375,10 +260,10 @@ function MainPage() {
                     </Grid>
                   </Box>
                   <Box>
-                    <List>
-                      {getPlaylist().map((video) => {
+                    <List>{console.log("Playlist: ", playlist)}
+                      {playlist.videos ? playlist.videos.map((video) => {
                         return <ListItemButton>{video.title}</ListItemButton>;
-                      })}
+                      }) : "Empty playlist"}
                     </List>
                   </Box>
                 </Grid>

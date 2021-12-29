@@ -40,7 +40,6 @@ function InitialPage() {
                                         id="outlined-required"
                                         label="Insert your nickname"
                                         color="primary"
-                                        id="nickname"
                                         focused={true}
                                         onChange={e => setNickname(e.target.value)}
                                     />

@@ -2,7 +2,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import YouTube from "react-youtube";
 
 import { useState } from "react";
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from "react-router-dom";
 
 import api from "../../services/api";
 import socketIOClient from "socket.io-client";
@@ -31,15 +31,16 @@ import {
   PauseRounded,
   PlayArrowRounded,
 } from "@material-ui/icons";
-import { onReadyEvent, onPlayerStateChange } from "../../services/PlayerService";
+import {
+  onReadyEvent,
+  onPlayerStateChange,
+} from "../../services/PlayerService";
 import { playPauseActions, jumpVideo } from "../../services/ControlsService";
 import { useEffect } from "react";
 
-const ENDPOINT = "http://localhost:3333";
-const socket = socketIOClient(ENDPOINT);
+const ENDPOINT = "http://127.0.0.1:3333";
 
 function MainPage() {
-
   const { roomId } = useParams();
   const [doJump, setDoJump] = useState(false);
 
@@ -48,20 +49,26 @@ function MainPage() {
   const [paused, setPaused] = useState(true);
   const [users, setUsers] = useState([]);
   const [playlist, setPlaylist] = useState([]);
-  const [videoUrl, setVideoUrl] = useState('');
+  const [videoUrl, setVideoUrl] = useState("");
 
-  useEffect(() => api.get(`room/${roomId}`).then(response => {
-    const room = response.data;
-    console.log("Room: ",room);
-    setUsers(room.users)
-    setPlaylist(room.playlist)
-    console.log("room: ", response.data);
+  
 
-  }), []);
+  const socket = socketIOClient(ENDPOINT, { query: { id: roomId } });
+  useEffect(() => {
+
+    api.get(`room/${roomId}`).then((response) => {
+      const room = response.data;
+      console.log("Room: ", room);
+      setUsers(room.users);
+      setPlaylist(room.playlist);
+
+      console.log("room: ", response.data);
+    });
+  }, []);
 
   function buildServiceParams() {
-
     return {
+      roomId: roomId,
       socket: socket,
       progressBar: {
         value: position,
@@ -70,6 +77,7 @@ function MainPage() {
       },
       paused: { value: paused, update: setPaused },
       doJump: { value: doJump, update: setDoJump },
+      setPlaylist,
     };
   }
 
@@ -87,16 +95,18 @@ function MainPage() {
     return `${minute}:${secondLeft <= 9 ? `0${secondLeft}` : secondLeft}`;
   }
   const mainIconColor = theme.palette.mode === "dark" ? "#fff" : "#000";
-  
 
-  async function handleNewVideo (event) {
+  async function handleNewVideo(event) {
     console.log("fron video url:", videoUrl);
     event.preventDefault();
-    const response = await api.post(`video/${roomId}`, {videoUrl});
-        console.log(response.data);
+    const response = await api.post(`video/${roomId}`, { videoUrl });
+    console.log(response.data);
   }
+
+  if (!localStorage.getItem("uuid"))
+    return <Redirect to={{ pathname: "/", state: { roomId } }} />;
+  
   return (
-    <>
       <Box id="main-content">
         <Grid container spacing={0.5}>
           <Grid item xs={2}>
@@ -116,9 +126,10 @@ function MainPage() {
                   <h1>Users</h1>
                   <Divider variant="middle" />
                   <List>
-                    {users.length && users.map((item) => {
-                      return <ListItem>{item.nickname}</ListItem>;
-                    })}
+                    {users.length &&
+                      users.map((item) => {
+                        return <ListItem className={item.identifier == localStorage.getItem("uuid") ? "focus-item" : "default-item"} >{item.nickname}</ListItem>;
+                      })}
                   </List>
                 </Grid>
               </Grid>
@@ -143,7 +154,7 @@ function MainPage() {
                 >
                   <YouTube
                     containerClassName="video-container"
-                    videoId="79DijItQXMM"
+                    videoId="sOkKSnqJPYY"
                     opts={{
                       // width: (window.innerWidth * 65.5) / 100,
                       // height: (window.innerHeight * 65.5) / 100,
@@ -167,7 +178,9 @@ function MainPage() {
                     min={0}
                     step={1}
                     max={duration}
-                    onChange={(_, value) => jumpVideo(_, value, setPosition, socket)}
+                    onChange={(_, value) =>
+                      jumpVideo(_, value, setPosition, socket)
+                    }
                     // onChange={(_, value) => jumpVideo(_, value, setPosition, socket)}
                     sx={{
                       color: "#5E3480",
@@ -220,7 +233,7 @@ function MainPage() {
                     <IconButton
                       id="play-pause"
                       aria-label={paused ? "play" : "pause"}
-                      onClick={() => playPauseActions(paused, setPaused)}
+                      onClick={(e) => playPauseActions(paused, setPaused)}
                     >
                       {paused ? (
                         <PlayArrowRounded
@@ -257,7 +270,7 @@ function MainPage() {
                         id="outlined-required"
                         label="Insert a video url..."
                         color="primary"
-                        onChange={e => setVideoUrl(e.target.value)}
+                        onChange={(e) => setVideoUrl(e.target.value)}
                       />
                     </Grid>
                     <Grid
@@ -271,10 +284,14 @@ function MainPage() {
                     </Grid>
                   </Box>
                   <Box>
-                    <List>{console.log("Playlist: ", playlist)}
-                      {playlist.videos ? playlist.videos.map((video) => {
-                        return <ListItemButton>{video.title}</ListItemButton>;
-                      }) : "Empty playlist"}
+                    <List>
+                      {playlist.videos
+                        ? playlist.videos.map((video) => {
+                            return (
+                              <ListItemButton>{video.title}</ListItemButton>
+                            );
+                          })
+                        : "Empty playlist"}
                     </List>
                   </Box>
                 </Grid>
@@ -283,7 +300,6 @@ function MainPage() {
           </Grid>
         </Grid>
       </Box>
-    </>
   );
 }
 

@@ -4,17 +4,22 @@ import api from "../../services/api";
 import { Box, Button, Grid, TextField } from "@mui/material";
 import "./style.css";
 
-function InitialPage() {
+function InitialPage(props) {
+
+    const {roomId} = props.location.state; 
     const history = useHistory();
     const [nickname, setNickname] = useState('');
 
     async function handleJoinRoom(event) {
         event.preventDefault();
-        const user = {nickname}
-    
-       const response = await api.post('user', user);
-        console.log(response.data);
-        history.push(`/room/${response.data.room.identifier}`);
+        const user = {nickname, room: {identifier: roomId}}
+        
+        const response = await api.post('user', user);
+        const userCreated = response.data;
+        localStorage.setItem("uuid",userCreated.identifier);
+        localStorage.setItem("nickname",userCreated.nickname);
+        history.push(`/room/${userCreated.room.identifier}`);
+        
       }
 
     return (

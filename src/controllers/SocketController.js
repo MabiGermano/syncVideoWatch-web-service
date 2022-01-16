@@ -15,3 +15,10 @@ export function setTune(player, paused, socket) {
         }
     });
 }
+
+export function updatePlaylist(setPlaylist, socket) {
+    socket.on('UpdatePlaylist', data => {
+        console.log("oi");
+        setPlaylist(data)
+    });
+}

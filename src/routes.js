@@ -6,7 +6,7 @@ function Routes() {
     return (
         <BrowserRouter>
             <Switch>
-                <Route path="/" exact component={InitialPage} />
+                <Route path="/" exact component={props => InitialPage(props)} />
                 <Route path="/room/:roomId" exact component={MainPage} />
             </Switch>
         </BrowserRouter>

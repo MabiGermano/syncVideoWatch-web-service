@@ -1,4 +1,4 @@
-import { player } from "./PlayerService";
+import {player} from "./PlayerService";
 import { PlayerEvents } from "../utils/YouTubeEventsEnum";
 
 export function playPauseActions(paused, setPaused) {
@@ -6,9 +6,9 @@ export function playPauseActions(paused, setPaused) {
   setPaused(!paused.value);
 }
 
-export function jumpVideo(_, value, setPosition, socket) {
+export function jumpVideo(player, value, setPosition, socket, roomId) {
   let intervalID;
-  console.log(player.getPlayerState());
+  console.log(player);
   if (
     player.getPlayerState() === PlayerEvents.PLAYING ||
     player.getPlayerState() === PlayerEvents.CUED
@@ -20,9 +20,11 @@ export function jumpVideo(_, value, setPosition, socket) {
 
   player.seekTo(value);
   socket.emit("PlayerAction", {
+    room:roomId,
+    action: {
     eventStatus: PlayerEvents.JUMPED,
     time: value,
-  });
+  }});
 }
 
 // export function nextVideo() {

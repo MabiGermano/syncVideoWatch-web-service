@@ -56,3 +56,7 @@ main {
 
     border-radius: var(--default-border-radius-size);
 }
+
+li.focus-item {
+    border: 2px solid var(--secondary-color);
+}

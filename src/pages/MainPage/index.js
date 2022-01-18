@@ -50,6 +50,7 @@ function MainPage() {
   const [users, setUsers] = useState([]);
   const [playlist, setPlaylist] = useState([]);
   const [videoUrl, setVideoUrl] = useState("");
+  const [currentVideo, setCurrentVideo] = useState(0);
 
   
 
@@ -61,6 +62,7 @@ function MainPage() {
       console.log("Room: ", room);
       setUsers(room.users);
       setPlaylist(room.playlist);
+      setCurrentVideo(room.playlist.currentPlaying)
 
       console.log("room: ", response.data);
     });

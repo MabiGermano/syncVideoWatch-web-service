@@ -20,7 +20,7 @@ export function jumpVideo(player, value, setPosition, socket, roomId) {
 
   player.seekTo(value);
   socket.emit("PlayerAction", {
-    room:roomId,
+    roomId,
     action: {
     eventStatus: PlayerEvents.JUMPED,
     time: value,

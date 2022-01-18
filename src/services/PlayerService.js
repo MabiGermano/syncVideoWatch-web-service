@@ -24,7 +24,7 @@ export function onPlayerStateChange(event, serviceParams) {
     if (doJump.value) doJump.update(false);
     
     socket.emit("PlayerAction", {
-        room: roomId,
+        roomId,
         action: {
         eventStatus: doJump.value ? PlayerEvents.JUMPED : event.data,
         time: event.target.getCurrentTime(),

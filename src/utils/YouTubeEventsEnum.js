@@ -5,5 +5,7 @@ export const PlayerEvents = {
     PAUSED: 2,
     BUFFERING: 3,
     CUED: 5,
-    JUMPED: 6
+    JUMPED: 6,
+    NEXT_VIDEO: 7,
+    PREVIOUS_VIDEO: 8
 };

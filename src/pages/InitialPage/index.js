@@ -6,7 +6,8 @@ import "./style.css";
 
 function InitialPage(props) {
 
-    const {roomId} = props.location.state; 
+    
+    const {roomId} = props.location.state ? props.location.state : {}; 
     const history = useHistory();
     const [nickname, setNickname] = useState('');
 

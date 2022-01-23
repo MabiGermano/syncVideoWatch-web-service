@@ -1,4 +1,4 @@
-import {player} from "./PlayerService";
+import { player } from "./PlayerService";
 import { PlayerEvents } from "../utils/YouTubeEventsEnum";
 
 export function playPauseActions(paused, setPaused) {
@@ -22,19 +22,23 @@ export function jumpVideo(player, value, setPosition, socket, roomId) {
   socket.emit("PlayerAction", {
     roomId,
     action: {
-    eventStatus: PlayerEvents.JUMPED,
-    time: value,
-  }});
+      eventStatus: PlayerEvents.JUMPED,
+      time: value,
+    },
+  });
 }
 
-// export function nextVideo() {
-//     getPlayerInstance().nextVideo();
-// }
+export function nextVideo(socket, roomId) {
+  // Set next on this client
+  socket.emit("NextVideo", { roomId });
+}
 
-// export function previousVideo() {
-//     getPlayerInstance().previousVideo();
-// }
+export function previousVideo(socket, roomId) {
+  // Set previous on this client
+  socket.emit("PreviousVideo", { roomId });
+}
 
-// export function playVideoAt(index) {
-//     getPlayerInstance().playVideoAt(index);
-// }
+export function playSpecificVideo(socket, roomId, playlist) {
+  // Set previous on this client
+  socket.emit("PlaySpecificVideo", { roomId, action: {playlist} });
+}

@@ -34,8 +34,9 @@ import {
 import {
   onReadyEvent,
   onPlayerStateChange,
+  player,
 } from "../../services/PlayerService";
-import { playPauseActions, jumpVideo } from "../../services/ControlsService";
+import { playPauseActions, jumpVideo, nextVideo, previousVideo } from "../../services/ControlsService";
 import { useEffect } from "react";
 
 const ENDPOINT = "http://127.0.0.1:3333";
@@ -50,22 +51,26 @@ function MainPage() {
   const [users, setUsers] = useState([]);
   const [playlist, setPlaylist] = useState([]);
   const [videoUrl, setVideoUrl] = useState("");
-  const [currentVideo, setCurrentVideo] = useState(0);
+  const [currentPlaying, setCurrentPlaying] = useState(0);
+  const [socket, setSocket] = useState({});
 
   
 
-  const socket = socketIOClient(ENDPOINT, { query: { id: roomId } });
+  
   useEffect(() => {
-
+    setSocket(socketIOClient(ENDPOINT, { query: { id: roomId } }));
+    
     api.get(`room/${roomId}`).then((response) => {
       const room = response.data;
       console.log("Room: ", room);
       setUsers(room.users);
       setPlaylist(room.playlist);
-      setCurrentVideo(room.playlist.currentPlaying)
+      setCurrentPlaying(room.playlist.currentPlaying)
+      console.log("playlist", playlist);
 
       console.log("room: ", response.data);
     });
+    // eslint-disable-next-line
   }, []);
 
   function buildServiceParams() {
@@ -77,10 +82,16 @@ function MainPage() {
         update: setPosition,
         setDuration: setDuration,
       },
-      paused: { value: paused, update: setPaused },
+      paused: { value: paused, update: setPaused, current: getPaused },
       doJump: { value: doJump, update: setDoJump },
       setPlaylist,
+      setCurrentPlaying
     };
+  }
+
+  function getPaused () {
+    console.log("get paused", paused);
+    return paused;
   }
 
   const TinyText = styled(Typography)({
@@ -130,7 +141,7 @@ function MainPage() {
                   <List>
                     {users.length &&
                       users.map((item) => {
-                        return <ListItem className={item.identifier == localStorage.getItem("uuid") ? "focus-item" : "default-item"} >{item.nickname}</ListItem>;
+                        return <ListItem className={item.identifier === localStorage.getItem("uuid") ? "focus-item" : "default-item"} >{item.nickname}</ListItem>;
                       })}
                   </List>
                 </Grid>
@@ -156,7 +167,8 @@ function MainPage() {
                 >
                   <YouTube
                     containerClassName="video-container"
-                    videoId="sOkKSnqJPYY"
+                    // videoId={currentPlaying != '' ? currentPlaying : "sOkKSnqJPYY"}
+                    videoId={currentPlaying}
                     opts={{
                       // width: (window.innerWidth * 65.5) / 100,
                       // height: (window.innerHeight * 65.5) / 100,
@@ -181,9 +193,8 @@ function MainPage() {
                     step={1}
                     max={duration}
                     onChange={(_, value) =>
-                      jumpVideo(_, value, setPosition, socket)
+                      jumpVideo(player, value, setPosition, socket, roomId)
                     }
-                    // onChange={(_, value) => jumpVideo(_, value, setPosition, socket)}
                     sx={{
                       color: "#5E3480",
                       height: 4,
@@ -226,7 +237,7 @@ function MainPage() {
                       mt: -1,
                     }}
                   >
-                    <IconButton aria-label="previous song">
+                    <IconButton aria-label="previous song" onClick={(_) => previousVideo(socket, roomId)}>
                       <FastRewindRounded
                         fontSize="large"
                         htmlColor={mainIconColor}
@@ -249,7 +260,7 @@ function MainPage() {
                         />
                       )}
                     </IconButton>
-                    <IconButton aria-label="next song">
+                    <IconButton aria-label="next song" onClick={(_) => nextVideo(socket, roomId)}>
                       <FastForwardRounded
                         fontSize="large"
                         htmlColor={mainIconColor}

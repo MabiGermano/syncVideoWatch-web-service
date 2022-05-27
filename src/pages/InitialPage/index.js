@@ -14,7 +14,6 @@ function InitialPage(props) {
     async function handleJoinRoom(event) {
         event.preventDefault();
         const user = {nickname, room: {identifier: roomId}}
-        
         const response = await api.post('user', user);
         const userCreated = response.data;
         localStorage.setItem("uuid",userCreated.identifier);

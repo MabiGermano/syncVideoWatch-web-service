@@ -53,12 +53,9 @@ function MainPage() {
   const [videoUrl, setVideoUrl] = useState("");
   const [currentPlaying, setCurrentPlaying] = useState(0);
   const [socket, setSocket] = useState({});
-
-  
-
   
   useEffect(() => {
-    setSocket(socketIOClient(process.env.SOCKET_SERVICE_ORIGIN, { query: { id: roomId } }));
+    setSocket(socketIOClient(process.env.REACT_APP_SOCKET_SERVICE_ORIGIN, { query: { id: roomId } }));
     
     api.get(`room/${roomId}`).then((response) => {
       const room = response.data;

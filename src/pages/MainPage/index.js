@@ -1,3 +1,4 @@
+import * as dotenv from "dotenv";
 import { styled, useTheme } from "@mui/material/styles";
 import YouTube from "react-youtube";
 
@@ -7,6 +8,7 @@ import { Redirect, useParams } from "react-router-dom";
 import api from "../../services/api";
 import socketIOClient from "socket.io-client";
 import "./style.css";
+
 
 import {
   Button,
@@ -39,8 +41,6 @@ import {
 import { playPauseActions, jumpVideo, nextVideo, previousVideo } from "../../services/ControlsService";
 import { useEffect } from "react";
 
-const ENDPOINT = "http://127.0.0.1:3333";
-
 function MainPage() {
   const { roomId } = useParams();
   const [doJump, setDoJump] = useState(false);
@@ -58,7 +58,7 @@ function MainPage() {
 
   
   useEffect(() => {
-    setSocket(socketIOClient(ENDPOINT, { query: { id: roomId } }));
+    setSocket(socketIOClient(process.env.SOCKET_SERVICE_ORIGIN, { query: { id: roomId } }));
     
     api.get(`room/${roomId}`).then((response) => {
       const room = response.data;

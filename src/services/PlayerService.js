@@ -14,7 +14,7 @@ export function onReadyEvent(event, serviceParams) {
   player = event.target;
 
   progressBar.setDuration(player.getDuration());
-  // jumpVideo(player, progressBar.value, progressBar.update, socket, roomId);
+  jumpVideo(player, progressBar.value, progressBar.update, socket, roomId);
   setTune(player, serviceParams);
   updatePlaylist(serviceParams);
   updatePlayerVideo(serviceParams);

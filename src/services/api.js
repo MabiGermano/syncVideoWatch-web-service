@@ -1,7 +1,8 @@
 import axios from 'axios';
+import * as dotenv from 'dotenv';
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:3334/'
+    baseURL: process.env.PLAYLIST_SERVICE_ORIGIN
 });
 
 export default api;

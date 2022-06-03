@@ -62,6 +62,7 @@ function MainPage() {
       console.log("Room: ", room);
       setUsers(room.users);
       setPlaylist(room.playlist);
+      console.log("current playing: ", room.playlist.currentPlaying);
       setCurrentPlaying(room.playlist.currentPlaying)
       console.log("playlist", playlist);
 

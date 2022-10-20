@@ -6,18 +6,17 @@ export function playPauseActions(paused, setPaused) {
   setPaused(!paused.value);
 }
 
-export function jumpVideo(player, value, setPosition, socket, roomId) {
-  let intervalID;
-  console.log(player);
-  if (
-    player.getPlayerState() === PlayerEvents.PLAYING ||
-    player.getPlayerState() === PlayerEvents.CUED
-  )
-    setInterval(() => {
-      intervalID = setPosition(player.getCurrentTime());
+export function syncTimePlaying(setIntervalID, setPosition) {
+  setInterval(() => {
+      setIntervalID(setPosition(player.getCurrentTime()));
     }, 1000);
-  else clearInterval(intervalID);
+}
 
+export function syncTimePaused(intervalID) {
+  clearInterval(intervalID);
+}
+
+export function jumpVideo(player, value, socket, roomId) {
   player.seekTo(value);
   socket.emit("PlayerAction", {
     roomId,

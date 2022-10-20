@@ -4,12 +4,11 @@ import YouTube from "react-youtube";
 
 import { useState } from "react";
 import { Redirect, useParams } from "react-router-dom";
+import { PlayerEvents } from "../../utils/YouTubeEventsEnum";
 
 import api from "../../services/api";
 import socketIOClient from "socket.io-client";
 import "./style.css";
-
-
 import {
   Button,
   Grid,
@@ -23,8 +22,6 @@ import {
   ListItemButton,
   TextField,
 } from "@mui/material";
-
-import "./style.css";
 import {
   Add,
   FastForwardRounded,
@@ -33,12 +30,14 @@ import {
   PauseRounded,
   PlayArrowRounded,
 } from "@material-ui/icons";
+import "./style.css";
+
 import {
   onReadyEvent,
   onPlayerStateChange,
   player,
 } from "../../services/PlayerService";
-import { playPauseActions, jumpVideo, nextVideo, previousVideo } from "../../services/ControlsService";
+import { playPauseActions, jumpVideo, nextVideo, previousVideo, syncTimePlaying, syncTimePaused} from "../../services/ControlsService";
 import { useEffect } from "react";
 
 function MainPage() {
@@ -53,20 +52,16 @@ function MainPage() {
   const [videoUrl, setVideoUrl] = useState("");
   const [currentPlaying, setCurrentPlaying] = useState(0);
   const [socket, setSocket] = useState({});
+  const [intervalID, setIntervalID] = useState({});
   
   useEffect(() => {
     setSocket(socketIOClient(process.env.REACT_APP_SOCKET_SERVICE_ORIGIN, { query: { id: roomId } }));
     
     api.get(`room/${roomId}`).then((response) => {
       const room = response.data;
-      console.log("Room: ", room);
       setUsers(room.users);
       setPlaylist(room.playlist);
-      console.log("current playing: ", room.playlist.currentPlaying);
       setCurrentPlaying(room.playlist.currentPlaying)
-      console.log("playlist", playlist);
-
-      console.log("room: ", response.data);
     });
     // eslint-disable-next-line
   }, []);
@@ -100,20 +95,21 @@ function MainPage() {
   });
 
   const theme = useTheme();
+  const mainIconColor = theme.palette.mode === "dark" ? "#fff" : "#000";
+
+  //TODO: remove from here, put on player service
   function formatDuration(value) {
     const minute = Math.floor(value / 60);
     const secondLeft = parseInt(value - minute * 60);
     return `${minute}:${secondLeft <= 9 ? `0${secondLeft}` : secondLeft}`;
   }
-  const mainIconColor = theme.palette.mode === "dark" ? "#fff" : "#000";
 
   async function handleNewVideo(event) {
-    console.log("fron video url:", videoUrl);
     event.preventDefault();
     const response = await api.post(`video/${roomId}`, { videoUrl });
-    console.log(response.data);
   }
 
+  //TODO: Think about best pratice to it
   if (!localStorage.getItem("uuid"))
     return <Redirect to={{ pathname: "/", state: { roomId } }} />;
   
@@ -165,19 +161,14 @@ function MainPage() {
                 >
                   <YouTube
                     containerClassName="video-container"
-                    // videoId={currentPlaying != '' ? currentPlaying : "sOkKSnqJPYY"}
                     videoId={currentPlaying}
                     opts={{
-                      // width: (window.innerWidth * 65.5) / 100,
-                      // height: (window.innerHeight * 65.5) / 100,
                       playerVars: { controls: 0 },
                     }}
-                    onReady={(event) =>
-                      onReadyEvent(event, buildServiceParams())
-                    }
-                    onStateChange={(event) =>
-                      onPlayerStateChange(event, buildServiceParams())
-                    }
+                    onReady={event => onReadyEvent(event, buildServiceParams())}
+                    onStateChange={event => onPlayerStateChange(event, buildServiceParams())}
+                    onPlay={_event => syncTimePlaying(setIntervalID, setPosition)}
+                    onPause={_event => syncTimePaused(intervalID)}
                   />
                 </Grid>
 
@@ -191,7 +182,7 @@ function MainPage() {
                     step={1}
                     max={duration}
                     onChange={(_, value) =>
-                      jumpVideo(player, value, setPosition, socket, roomId)
+                      jumpVideo(player, value, socket, roomId)
                     }
                     sx={{
                       color: "#5E3480",

@@ -10,11 +10,9 @@ export let player;
 
 export function onReadyEvent(event, serviceParams) {
   const { progressBar, socket, roomId } = serviceParams;
-
   player = event.target;
-
   progressBar.setDuration(player.getDuration());
-  jumpVideo(player, progressBar.value, progressBar.update, socket, roomId);
+  jumpVideo(player, progressBar.value, socket, roomId);
   setTune(player, serviceParams);
   updatePlaylist(serviceParams);
   updatePlayerVideo(serviceParams);

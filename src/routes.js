@@ -1,16 +1,16 @@
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import InitialPage from './pages/InitialPage';
 import MainPage from './pages/MainPage';
 
-function Routes() {
+function AppRoutes() {
     return (
         <BrowserRouter>
-            <Switch>
-                <Route path="/" exact component={props => InitialPage(props)} />
-                <Route path="/room/:roomId" exact component={MainPage} />
-            </Switch>
+            <Routes>
+                <Route path="/" exact element={<InitialPage />} />
+                <Route path="/room/:roomId" exact element={<MainPage />} />
+            </Routes>
         </BrowserRouter>
     );
 }
 
-export default Routes;
+export default AppRoutes;

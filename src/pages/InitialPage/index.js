@@ -1,16 +1,14 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import api from "../../services/api";
 import { Box, Button, Grid, TextField } from "@mui/material";
 import "./style.css";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function InitialPage(props) {
-
-    
-    const {roomId} = props.location.state ? props.location.state : {}; 
-    const history = useHistory();
+function InitialPage() {
+    const navigate = useNavigate();
     const [nickname, setNickname] = useState('');
-
+    const {state} = useLocation();
+    const {roomId} = state || {};
     async function handleJoinRoom(event) {
         event.preventDefault();
         const user = {nickname, room: {identifier: roomId}};
@@ -18,7 +16,7 @@ function InitialPage(props) {
         const userCreated = response.data;
         localStorage.setItem("uuid",userCreated.identifier);
         localStorage.setItem("nickname",userCreated.nickname);
-        history.push(`/room/${userCreated.room.identifier}`);
+        navigate(`/room/${userCreated.room.identifier}`);
       }
 
     return (

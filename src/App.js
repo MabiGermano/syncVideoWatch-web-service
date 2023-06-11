@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider } from "@mui/material";
-import Routes from "./routes";
+import AppRoutes from "./routes";
 
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
   });
   return (
     <ThemeProvider theme={THEME}>
-      <Routes />
+      <AppRoutes />
     </ThemeProvider>
   );
 }

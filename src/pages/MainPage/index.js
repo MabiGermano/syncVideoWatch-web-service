@@ -1,9 +1,8 @@
-import * as dotenv from "dotenv";
 import { styled, useTheme } from "@mui/material/styles";
 import YouTube from "react-youtube";
 
 import { useState } from "react";
-import { Redirect, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { PlayerEvents } from "../../utils/YouTubeEventsEnum";
 
 import api from "../../services/api";
@@ -29,7 +28,7 @@ import {
   LinkRounded,
   PauseRounded,
   PlayArrowRounded,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import "./style.css";
 
 import {
@@ -108,10 +107,11 @@ function MainPage() {
     event.preventDefault();
     const response = await api.post(`video/${roomId}`, { videoUrl });
   }
+  const navigate = useNavigate();
 
   //TODO: Think about best pratice to it
   if (!localStorage.getItem("uuid"))
-    return <Redirect to={{ pathname: "/", state: { roomId } }} />;
+    return navigate("/", {state: {roomId}});
   
   return (
       <Box id="main-content">

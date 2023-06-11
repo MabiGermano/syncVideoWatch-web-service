@@ -1,4 +1,4 @@
-import { player } from '../services/PlayerService';
+import { Player } from '../services/PlayerService';
 import { PlayerEvents } from '../utils/YouTubeEventsEnum';
 
 export function setTune(player, serviceParams) {
@@ -6,12 +6,12 @@ export function setTune(player, serviceParams) {
     socket.on('SetTune', action => {
         if (action.eventStatus === PlayerEvents.PAUSED) {
             paused.update(true);
-            player.pauseVideo();
+            Player().pauseVideo();
         } else if (action.eventStatus === PlayerEvents.PLAYING) {
             paused.update(false);
-            player.playVideo();
+            Player().playVideo();
         } else if (action.eventStatus === PlayerEvents.JUMPED) {
-            player.seekTo(action.time, true);
+            Player().seekTo(action.time, true);
         }
     });
 }
@@ -30,6 +30,6 @@ export function updatePlayerVideo(serviceParams) {
         console.log("updateplayerVideo");
         setCurrentPlaying(playlist.currentPlaying);
         setPlaylist(playlist);
-        player.playVideo();
+        Player().playVideo();
     })
 }

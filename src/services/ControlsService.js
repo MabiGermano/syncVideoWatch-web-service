@@ -1,14 +1,14 @@
-import { player } from "./PlayerService";
+import { Player } from "./PlayerService";
 import { PlayerEvents } from "../utils/YouTubeEventsEnum";
 
 export function playPauseActions(paused, setPaused) {
-  paused ? player.playVideo() : player.pauseVideo();
+  paused ? Player().playVideo() : Player().pauseVideo();
   setPaused(!paused.value);
 }
 
 export function syncTimePlaying(setIntervalID, setPosition) {
   setInterval(() => {
-      setIntervalID(setPosition(player.getCurrentTime()));
+      setIntervalID(setPosition(Player().getCurrentTime()));
     }, 1000);
 }
 
@@ -16,8 +16,8 @@ export function syncTimePaused(intervalID) {
   clearInterval(intervalID);
 }
 
-export function jumpVideo(player, value, socket, roomId) {
-  player.seekTo(value);
+export function jumpVideo(value, socket, roomId) {
+  Player().seekTo(value);
   socket.emit("PlayerAction", {
     roomId,
     action: {

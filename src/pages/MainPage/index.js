@@ -33,10 +33,9 @@ import "./style.css";
 
 import {
   onReadyEvent,
-  onPlayerStateChange,
-  player,
+  onPlayerStateChange
 } from "../../services/PlayerService";
-import { playPauseActions, jumpVideo, nextVideo, previousVideo, syncTimePlaying, syncTimePaused} from "../../services/ControlsService";
+import { playPauseActions, jumpVideo, nextVideo, previousVideo, syncTimePlaying, syncTimePaused } from "../../services/ControlsService";
 import { useEffect } from "react";
 
 function MainPage() {
@@ -52,12 +51,13 @@ function MainPage() {
   const [currentPlaying, setCurrentPlaying] = useState(0);
   const [socket, setSocket] = useState({});
   const [intervalID, setIntervalID] = useState({});
-  
+
   useEffect(() => {
     setSocket(socketIOClient(process.env.REACT_APP_SOCKET_SERVICE_ORIGIN, { query: { id: roomId } }));
-    
+
     api.get(`room/${roomId}`).then((response) => {
       const room = response.data;
+      console.log("tessss: ", room);
       setUsers(room.users);
       setPlaylist(room.playlist);
       setCurrentPlaying(room.playlist.currentPlaying)
@@ -81,7 +81,7 @@ function MainPage() {
     };
   }
 
-  function getPaused () {
+  function getPaused() {
     console.log("get paused", paused);
     return paused;
   }
@@ -111,197 +111,197 @@ function MainPage() {
 
   //TODO: Think about best pratice to it
   if (!localStorage.getItem("uuid"))
-    return navigate("/", {state: {roomId}});
-  
-  return (
-      <Box id="main-content">
-        <Grid container spacing={0.5}>
-          <Grid item xs={2}>
-            <Box id="publishing-area"></Box>
-          </Grid>
-          <Grid item xs={10}>
-            <Grid component="main" justifyContent="space-around" container>
-              <Grid item xs={3.6} container direction="column">
-                <Grid item xs={1.5}>
-                  <Button id="invite-button" variant="contained" sx={{ mt: 1 }}>
-                    Invite
-                    <LinkRounded />
-                  </Button>
-                </Grid>
+    return navigate("/", { state: { roomId } });
 
-                <Grid item xs={10.3} id="users-panel" className="panel">
-                  <h1>Users</h1>
-                  <Divider variant="middle" />
-                  <List>
-                    {users.length &&
-                      users.map((item) => {
-                        return <ListItem className={item.identifier === localStorage.getItem("uuid") ? "focus-item" : "default-item"} >{item.nickname}</ListItem>;
-                      })}
-                  </List>
-                </Grid>
+  return (
+    <Box id="main-content">
+      <Grid container spacing={0.5}>
+        <Grid item xs={2}>
+          <Box id="publishing-area"></Box>
+        </Grid>
+        <Grid item xs={10}>
+          <Grid component="main" justifyContent="space-around" container>
+            <Grid item xs={3.6} container direction="column">
+              <Grid item xs={1.5}>
+                <Button id="invite-button" variant="contained" sx={{ mt: 1 }}>
+                  Invite
+                  <LinkRounded />
+                </Button>
               </Grid>
 
+              <Grid item xs={10.3} id="users-panel" className="panel">
+                <h1>Users</h1>
+                <Divider variant="middle" />
+                <List>
+                  {users.length &&
+                    users.map((item) => {
+                      return <ListItem className={item.identifier === localStorage.getItem("uuid") ? "focus-item" : "default-item"} >{item.nickname}</ListItem>;
+                    })}
+                </List>
+              </Grid>
+            </Grid>
+
+            <Grid
+              item
+              xs={8}
+              container
+              direction="column"
+              justifyContent="space-around"
+            >
               <Grid
                 item
-                xs={8}
-                container
-                direction="column"
-                justifyContent="space-around"
+                xs={5}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  mt: 1,
+                }}
+                id="stage-video"
               >
-                <Grid
-                  item
-                  xs={5}
+                <YouTube
+                  containerClassName="video-container"
+                  videoId={currentPlaying}
+                  opts={{
+                    playerVars: { controls: 0 },
+                  }}
+                  onReady={event => onReadyEvent(event, buildServiceParams())}
+                  onStateChange={event => onPlayerStateChange(event, buildServiceParams())}
+                  onPlay={_event => syncTimePlaying(setIntervalID, setPosition)}
+                  onPause={_event => syncTimePaused(intervalID)}
+                />
+              </Grid>
+
+              <Grid item xs={1.3} id="player-control" className="panel">
+                <Slider
+                  id="progress-bar"
+                  aria-label="time-indicator"
+                  size="small"
+                  value={position}
+                  min={0}
+                  step={1}
+                  max={duration}
+                  onChange={(_, value) =>
+                    jumpVideo(value, socket, roomId)
+                  }
+                  sx={{
+                    color: "#5E3480",
+                    height: 4,
+                    "& .MuiSlider-thumb": {
+                      width: 8,
+                      height: 8,
+                      transition: "0.3s cubic-bezier(.47,1.64,.41,.8)",
+                      "&:before": {
+                        boxShadow: "0 2px 12px 0 rgba(0,0,0,0.4)",
+                      },
+                      "&:hover, &.Mui-focusVisible": {
+                        boxShadow: `0px 0px 0px 8px rgb(94, 52, 128)`,
+                      },
+                      "&.Mui-active": {
+                        width: 20,
+                        height: 20,
+                      },
+                    },
+                    "& .MuiSlider-rail": {
+                      opacity: 0.28,
+                    },
+                  }}
+                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mt: -2,
+                  }}
+                >
+                  <TinyText>{formatDuration(position)}</TinyText>
+                  <TinyText>-{formatDuration(duration - position)}</TinyText>
+                </Box>
+                <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    mt: 1,
+                    mt: -1,
                   }}
-                  id="stage-video"
                 >
-                  <YouTube
-                    containerClassName="video-container"
-                    videoId={currentPlaying}
-                    opts={{
-                      playerVars: { controls: 0 },
-                    }}
-                    onReady={event => onReadyEvent(event, buildServiceParams())}
-                    onStateChange={event => onPlayerStateChange(event, buildServiceParams())}
-                    onPlay={_event => syncTimePlaying(setIntervalID, setPosition)}
-                    onPause={_event => syncTimePaused(intervalID)}
-                  />
-                </Grid>
-
-                <Grid item xs={1.3} id="player-control" className="panel">
-                  <Slider
-                    id="progress-bar"
-                    aria-label="time-indicator"
-                    size="small"
-                    value={position}
-                    min={0}
-                    step={1}
-                    max={duration}
-                    onChange={(_, value) =>
-                      jumpVideo(player, value, socket, roomId)
-                    }
-                    sx={{
-                      color: "#5E3480",
-                      height: 4,
-                      "& .MuiSlider-thumb": {
-                        width: 8,
-                        height: 8,
-                        transition: "0.3s cubic-bezier(.47,1.64,.41,.8)",
-                        "&:before": {
-                          boxShadow: "0 2px 12px 0 rgba(0,0,0,0.4)",
-                        },
-                        "&:hover, &.Mui-focusVisible": {
-                          boxShadow: `0px 0px 0px 8px rgb(94, 52, 128)`,
-                        },
-                        "&.Mui-active": {
-                          width: 20,
-                          height: 20,
-                        },
-                      },
-                      "& .MuiSlider-rail": {
-                        opacity: 0.28,
-                      },
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      mt: -2,
-                    }}
+                  <IconButton aria-label="previous song" onClick={(_) => previousVideo(socket, roomId)}>
+                    <FastRewindRounded
+                      fontSize="large"
+                      htmlColor={mainIconColor}
+                    />
+                  </IconButton>
+                  <IconButton
+                    id="play-pause"
+                    aria-label={paused ? "play" : "pause"}
+                    onClick={(e) => playPauseActions(paused, setPaused)}
                   >
-                    <TinyText>{formatDuration(position)}</TinyText>
-                    <TinyText>-{formatDuration(duration - position)}</TinyText>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      mt: -1,
-                    }}
-                  >
-                    <IconButton aria-label="previous song" onClick={(_) => previousVideo(socket, roomId)}>
-                      <FastRewindRounded
-                        fontSize="large"
+                    {paused ? (
+                      <PlayArrowRounded
+                        className="play-pause-icon"
                         htmlColor={mainIconColor}
                       />
-                    </IconButton>
-                    <IconButton
-                      id="play-pause"
-                      aria-label={paused ? "play" : "pause"}
-                      onClick={(e) => playPauseActions(paused, setPaused)}
-                    >
-                      {paused ? (
-                        <PlayArrowRounded
-                          className="play-pause-icon"
-                          htmlColor={mainIconColor}
-                        />
-                      ) : (
-                        <PauseRounded
-                          className="play-pause-icon"
-                          htmlColor={mainIconColor}
-                        />
-                      )}
-                    </IconButton>
-                    <IconButton aria-label="next song" onClick={(_) => nextVideo(socket, roomId)}>
-                      <FastForwardRounded
-                        fontSize="large"
+                    ) : (
+                      <PauseRounded
+                        className="play-pause-icon"
                         htmlColor={mainIconColor}
                       />
-                    </IconButton>
-                  </Box>
-                </Grid>
-                <Grid item xs={5} className="panel" id="playlist">
-                  <Box
-                    component="form"
-                    sx={{ display: "flex", mt: 1 }}
-                    justifyContent="space-evenly"
-                    noValidate
-                    autoComplete="off"
-                    onSubmit={handleNewVideo}
+                    )}
+                  </IconButton>
+                  <IconButton aria-label="next song" onClick={(_) => nextVideo(socket, roomId)}>
+                    <FastForwardRounded
+                      fontSize="large"
+                      htmlColor={mainIconColor}
+                    />
+                  </IconButton>
+                </Box>
+              </Grid>
+              <Grid item xs={5} className="panel" id="playlist">
+                <Box
+                  component="form"
+                  sx={{ display: "flex", mt: 1 }}
+                  justifyContent="space-evenly"
+                  noValidate
+                  autoComplete="off"
+                  onSubmit={handleNewVideo}
+                >
+                  <Grid item xs={10}>
+                    <TextField
+                      required
+                      id="outlined-required"
+                      label="Insert a video url..."
+                      color="primary"
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    xs={1}
+                    sx={{ display: "flex", alignContent: "center" }}
                   >
-                    <Grid item xs={10}>
-                      <TextField
-                        required
-                        id="outlined-required"
-                        label="Insert a video url..."
-                        color="primary"
-                        onChange={(e) => setVideoUrl(e.target.value)}
-                      />
-                    </Grid>
-                    <Grid
-                      item
-                      xs={1}
-                      sx={{ display: "flex", alignContent: "center" }}
-                    >
-                      <Button variant="contained" type="submit">
-                        <Add />
-                      </Button>
-                    </Grid>
-                  </Box>
-                  <Box>
-                    <List>
-                      {playlist.videos
-                        ? playlist.videos.map((video) => {
-                            return (
-                              <ListItemButton>{video.title}</ListItemButton>
-                            );
-                          })
-                        : "Empty playlist"}
-                    </List>
-                  </Box>
-                </Grid>
+                    <Button variant="contained" type="submit">
+                      <Add />
+                    </Button>
+                  </Grid>
+                </Box>
+                <Box>
+                  <List>
+                    {playlist.videos
+                      ? playlist.videos.map((video) => {
+                        return (
+                          <ListItemButton>{video.title}</ListItemButton>
+                        );
+                      })
+                      : "Empty playlist"}
+                  </List>
+                </Box>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Box>
+      </Grid>
+    </Box>
   );
 }
 

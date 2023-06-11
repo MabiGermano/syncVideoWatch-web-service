@@ -6,20 +6,26 @@ import {
   updatePlayerVideo,
 } from "../controllers/SocketController";
 
-export let player;
+let _player;
+
+export function Player() {
+  return _player
+};
+
 
 export function onReadyEvent(event, serviceParams) {
   const { progressBar, socket, roomId } = serviceParams;
-  player = event.target;
-  progressBar.setDuration(player.getDuration());
-  jumpVideo(player, progressBar.value, socket, roomId);
-  setTune(player, serviceParams);
+  _player = event.target;
+  progressBar.setDuration(_player.getDuration());
+  jumpVideo(progressBar.value, socket, roomId);
+  setTune(_player, serviceParams);
   updatePlaylist(serviceParams);
   updatePlayerVideo(serviceParams);
 }
 
 export function onPlayerStateChange(event, serviceParams) {
   const { socket, doJump, roomId, paused } = serviceParams;
+  _player = event.target;
 
   console.log("entrou state change");
   if (doJump.value) doJump.update(false);
